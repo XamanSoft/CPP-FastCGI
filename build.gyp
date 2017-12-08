@@ -87,6 +87,11 @@
 		{
 			'target_name': 'cppfastcgi-daemon',
 			'type': 'executable',
+			'conditions': [
+				['OS == "win"', {
+					'libraries': ['-ladvapi32.lib'],
+				}]
+			],
 			"dependencies": [
 				"lib/CppMetadata/build.gyp:CPP-Metadata-lib"
 			],
