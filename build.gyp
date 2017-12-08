@@ -91,6 +91,7 @@
 				"lib/CppMetadata/build.gyp:CPP-Metadata-lib"
 			],
 			'sources': [
+				'src/<(OS)/daemon.cpp',
 				'src/daemon_main.cpp'
 			],
 		},
