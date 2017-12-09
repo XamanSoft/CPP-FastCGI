@@ -128,6 +128,7 @@ DWORD WINAPI ServiceDaemonWorkerThread(LPVOID lpParam)
 	while (WaitForSingleObject(g_ServiceStopEvent, 0) != WAIT_OBJECT_0)
 	{
 		//worker.run();
+		Sleep(1000);
 	}
 
 	return ERROR_SUCCESS;

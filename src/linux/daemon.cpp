@@ -54,6 +54,7 @@ void DaemonProcess() {
 
 	while (running) {
 		//worker.run();
+		sleep(1);
 	}
 
 }
