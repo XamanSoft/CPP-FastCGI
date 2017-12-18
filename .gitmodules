@@ -1,3 +1,6 @@
 [submodule "lib/CPP-SystemRT"]
 	path = lib/CPP-SystemRT
 	url = https://github.com/XamanSoft/CPP-SystemRT.git
+[submodule "lib/CPP-Metadata"]
+	path = lib/CPP-Metadata
+	url = https://github.com/XamanSoft/CPP-Metadata.git

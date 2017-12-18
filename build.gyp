@@ -15,6 +15,7 @@
 	'target_defaults': {
 		"include_dirs" : [ 
 			'lib/CppMetadata/include',
+			'lib/CPP-SystemRT/include',
 			'include'
 		],
 		'cflags': ['-DDUK_USE_CPP_EXCEPTIONS=1'],
