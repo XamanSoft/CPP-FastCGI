@@ -14,7 +14,7 @@
 	},
 	'target_defaults': {
 		"include_dirs" : [ 
-			'lib/CppMetadata/include',
+			'lib/CPP-Metadata/include',
 			'lib/CPP-SystemRT/include',
 			'include'
 		],
@@ -94,10 +94,11 @@
 				}]
 			],
 			"dependencies": [
-				"lib/CppMetadata/build.gyp:CPP-Metadata-lib"
+				"lib/CPP-Metadata/build.gyp:CPP-Metadata-lib",
+				"lib/CPP-SystemRT/build.gyp:CPP-SystemRT-lib"
 			],
 			'sources': [
-				'src/<(OS)/daemon.cpp',
+				'src/daemon.cpp',
 				'src/daemon_main.cpp'
 			],
 		},
