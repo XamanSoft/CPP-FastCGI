@@ -67,44 +67,17 @@ struct Record {
 	unsigned char *paddingData;		// [paddingLength]
 };
 
-struct NameValuePair11 {
-	unsigned char nameLengthB0;		// nameLengthB0  >> 7 == 0
-	unsigned char valueLengthB0;	// valueLengthB0 >> 7 == 0
-	unsigned char *nameData;		// [nameLength]
-	unsigned char *valueData;		// [valueLength]
-};
-
-struct NameValuePair14 {
-	unsigned char nameLengthB0;		// nameLengthB0  >> 7 == 0
-	unsigned char valueLengthB3;	// valueLengthB3 >> 7 == 1
-	unsigned char valueLengthB2;
-	unsigned char valueLengthB1;
-	unsigned char valueLengthB0;
-	unsigned char *nameData;		// [nameLength]
-	unsigned char *valueData;		//[valueLength	((B3 & 0x7f) << 24) + (B2 << 16) + (B1 << 8) + B0];
-};
-
-struct NameValuePair41 {
-	unsigned char nameLengthB3;		// nameLengthB3  >> 7 == 1
+struct NameValuePair {
+	unsigned char nameLengthB3;
 	unsigned char nameLengthB2;
 	unsigned char nameLengthB1;
 	unsigned char nameLengthB0;
-	unsigned char valueLengthB0;	// valueLengthB0 >> 7 == 0
-	unsigned char *nameData;		// [nameLength ((B3 & 0x7f) << 24) + (B2 << 16) + (B1 << 8) + B0]
-	unsigned char *valueData;		// [valueLength]
-};
-
-struct NameValuePair44 {
-	unsigned char nameLengthB3;		// nameLengthB3  >> 7 == 1
-	unsigned char nameLengthB2;
-	unsigned char nameLengthB1;
-	unsigned char nameLengthB0;
-	unsigned char valueLengthB3;	// valueLengthB3 >> 7 == 1
+	unsigned char valueLengthB3;
 	unsigned char valueLengthB2;
 	unsigned char valueLengthB1;
 	unsigned char valueLengthB0;
-	unsigned char *nameData;		// [nameLength ((B3 & 0x7f) << 24) + (B2 << 16) + (B1 << 8) + B0]
-	unsigned char *valueData;		// [valueLength ((B3 & 0x7f) << 24) + (B2 << 16) + (B1 << 8) + B0];
+	unsigned char *nameData;
+	unsigned char *valueData;
 };
 
 struct Header {
