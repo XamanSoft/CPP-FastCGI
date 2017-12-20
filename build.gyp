@@ -90,7 +90,10 @@
 			'type': 'executable',
 			'conditions': [
 				['OS == "win"', {
-					'libraries': ['-ladvapi32.lib'],
+					'libraries': ['-ladvapi32.lib', '-lws2_32.lib'],
+				}],
+				['OS == "linux"', {
+					'libraries': ['-lpthread'],
 				}]
 			],
 			"dependencies": [
