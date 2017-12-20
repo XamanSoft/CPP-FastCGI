@@ -3,8 +3,8 @@
 
 using namespace CppFastCGI;
 
-DaemonThread::DaemonThread(): socket("localhost", "9000") {
-	
+DaemonThread::DaemonThread() {
+	socket->bind("localhost", "9000");
 }
 
 DaemonThread::~DaemonThread() {
@@ -12,5 +12,6 @@ DaemonThread::~DaemonThread() {
 }
 
 void DaemonThread::run() {
+	socket->accept();
 	exit(0);
 }
