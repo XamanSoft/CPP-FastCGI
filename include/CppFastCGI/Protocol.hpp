@@ -55,47 +55,29 @@ const char MPXS_CONNS[]		= "FCGI_MPXS_CONNS";
 } // Value End
 
 struct Record {
-	unsigned char version;
-	unsigned char type;
-	unsigned char requestIdB1;
-	unsigned char requestIdB0;
-	unsigned char contentLengthB1;
-	unsigned char contentLengthB0;
-	unsigned char paddingLength;
-	unsigned char reserved;
-	unsigned char *contentData;		// [contentLength]
-	unsigned char *paddingData;		// [paddingLength]
+	unsigned int version;
+	unsigned int type;
+	unsigned int requestId;
+	std::vector<unsigned char> contentData;
+	std::vector<unsigned char> paddingData;
 };
 
 struct NameValuePair {
-	unsigned char nameLengthB3;
-	unsigned char nameLengthB2;
-	unsigned char nameLengthB1;
-	unsigned char nameLengthB0;
-	unsigned char valueLengthB3;
-	unsigned char valueLengthB2;
-	unsigned char valueLengthB1;
-	unsigned char valueLengthB0;
-	unsigned char *nameData;
-	unsigned char *valueData;
+	std::vector<unsigned char> name;
+	std::vector<unsigned char> value;
 };
 
 struct Header {
-    unsigned char version;
-    unsigned char type;
-    unsigned char requestIdB1;
-    unsigned char requestIdB0;
-    unsigned char contentLengthB1;
-    unsigned char contentLengthB0;
-    unsigned char paddingLength;
-    unsigned char reserved;
+    unsigned int version;
+    unsigned int type;
+    unsigned int requestId;
+    unsigned int contentLength;
+    unsigned int paddingLength;
 };
 
 struct BeginRequestBody {
-    unsigned char roleB1;
-    unsigned char roleB0;
+    unsigned int role;
     unsigned char flags;
-    unsigned char reserved[5];
 };
 
 struct BeginRequestRecord {
@@ -104,12 +86,8 @@ struct BeginRequestRecord {
 };
 
 struct EndRequestBody {
-    unsigned char appStatusB3;
-    unsigned char appStatusB2;
-    unsigned char appStatusB1;
-    unsigned char appStatusB0;
+    unsigned int appStatus;
     unsigned char protocolStatus;
-    unsigned char reserved[3];
 };
 
 struct EndRequestRecord {
@@ -119,7 +97,6 @@ struct EndRequestRecord {
 
 struct UnknownTypeBody {
     unsigned char type;    
-    unsigned char reserved[7];
 };
 
 struct UnknownTypeRecord {
