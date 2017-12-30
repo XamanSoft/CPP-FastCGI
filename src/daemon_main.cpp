@@ -4,5 +4,5 @@
 using namespace CppFastCGI;
 
 int main() {
-	return CppSystemRT::Daemon::exec<DaemonThread>();
+	return CppSystemRT::Daemon::exec<DaemonThread>("localhost", "9000");
 }

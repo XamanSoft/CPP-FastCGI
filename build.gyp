@@ -101,6 +101,8 @@
 				"lib/CPP-SystemRT/build.gyp:CPP-SystemRT-lib"
 			],
 			'sources': [
+				'src/record.cpp',
+				'src/thread.cpp',
 				'src/daemon.cpp',
 				'src/daemon_main.cpp'
 			],

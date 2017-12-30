@@ -1,110 +1,84 @@
-#ifndef _CPPFASTCGI_DATATYPE_HPP
-#define _CPPFASTCGI_DATATYPE_HPP
+#ifndef _CPPFASTCGI_RECORD_HPP
+#define _CPPFASTCGI_RECORD_HPP
 
 namespace CppFastCGI { // CppFastCGI Begin
 
-namespace Protocol {  // Protocol Begin
+class Record {
+	std::vector<unsigned char> data;
 
-namespace Value { // Value Begin
+public:
+	// Listening socket file number
+	//static constexpr const int LISTENSOCK_FILENO	= 0;
 
-// Listening socket file number
-const int LISTENSOCK_FILENO	= 0;
+	// Number of bytes in a FCGI_Header.  Future versions of the protocol will not reduce this number.
+	static constexpr const int HEADER_LEN		= 8;
 
-// Number of bytes in a FCGI_Header.  Future versions of the protocol will not reduce this number.
-const int HEADER_LEN		= 8;
+	// Value for version component of FCGI_Header
+	static constexpr const int VERSION			= 1;
 
-// Value for version component of FCGI_Header
-const int VERSION			= 1;
+	// Values for type component of FCGI_Header
+	enum RequestType {
+		RT_NONE					= 0,
+		BEGIN_REQUEST			= 1,
+		ABORT_REQUEST			= 2,
+		END_REQUEST				= 3,
+		PARAMS					= 4,
+		STDIN					= 5,
+		STDOUT					= 6,
+		STDERR					= 7,
+		DATA					= 8,
+		GET_VALUES				= 9,
+		GET_VALUES_RESULT		= 10,
+		UNKNOWN_TYPE			= 11,
+		MAXTYPE					= UNKNOWN_TYPE
+	};
 
-// Values for type component of FCGI_Header
-const int BEGIN_REQUEST		= 1;
-const int ABORT_REQUEST		= 2;
-const int END_REQUEST		= 3;
-const int PARAMS			= 4;
-const int STDIN				= 5;
-const int STDOUT			= 6;
-const int STDERR			= 7;
-const int DATA				= 8;
-const int GET_VALUES		= 9;
-const int GET_VALUES_RESULT	= 10;
-const int UNKNOWN_TYPE		= 11;
-const int MAXTYPE			= UNKNOWN_TYPE;
+	// Value for requestId component of FCGI_Header
+	static constexpr const int NULL_REQUEST_ID	= 0;
 
-// Value for requestId component of FCGI_Header
-const int NULL_REQUEST_ID	= 0;
+	// Mask for flags component of FCGI_BeginRequestBody
+	static constexpr const int KEEP_CONN		= 1;
 
-// Mask for flags component of FCGI_BeginRequestBody
-const int KEEP_CONN			= 1;
+	// Values for role component of FCGI_BeginRequestBody
+	enum RequestRole {
+		RESPONDER				= 1,
+		AUTHORIZER				= 2,
+		FILTER					= 3
+	};
 
-// Values for role component of FCGI_BeginRequestBody
-const int RESPONDER			= 1;
-const int AUTHORIZER		= 2;
-const int FILTER			= 3;
+	// Values for protocolStatus component of FCGI_EndRequestBody
+	enum ProtocolStatus {
+		REQUEST_COMPLETE		= 0,
+		CANT_MPX_CONN			= 1,
+		OVERLOADED				= 2,
+		UNKNOWN_ROLE			= 3
+	};
 
-// Values for protocolStatus component of FCGI_EndRequestBody
-const int REQUEST_COMPLETE	= 0;
-const int CANT_MPX_CONN		= 1;
-const int OVERLOADED		= 2;
-const int UNKNOWN_ROLE		= 3;
+	// Variable names for FCGI_GET_VALUES / FCGI_GET_VALUES_RESULT records
+	static constexpr const char* MAX_CONNS	= "FCGI_MAX_CONNS";
+	static constexpr const char* MAX_REQS	= "FCGI_MAX_REQS";
+	static constexpr const char* MPXS_CONNS	= "FCGI_MPXS_CONNS";
 
-// Variable names for FCGI_GET_VALUES / FCGI_GET_VALUES_RESULT records
-const char MAX_CONNS[]		= "FCGI_MAX_CONNS";
-const char MAX_REQS[]		= "FCGI_MAX_REQS";
-const char MPXS_CONNS[]		= "FCGI_MPXS_CONNS";
-
-} // Value End
-
-struct Record {
-	unsigned int version;
-	unsigned int type;
-	unsigned int requestId;
-	std::vector<unsigned char> contentData;
-	std::vector<unsigned char> paddingData;
+	Record(RequestType type = RT_NONE, int requestId = NULL_REQUEST_ID, int paddingLength = 0);
+	Record(CppSystemRT::File& file);
+	virtual ~Record();
+	
+	int requestId(int id = -1);
+	int requestType(int type = RT_NONE);
+	int contentLength(int length = -1);
+	
+	void writeUnknownTypeBody(int type);
+	int readUnknownTypeBody();
+	void readBeginRequestBody(int& role, int& flags);
+	void writeBeginRequestBody(int const& role, int const& flags);
+	void readEndRequestBody(int& appStatus, int& protocolStatus);
+	void writeEndRequestBody(int const& appStatus, int const& protocolStatus);
+	void readNameValuePair(std::map<std::string, std::string>& params);
+	void writeNameValuePair(std::map<std::string, std::string> const& params);
+	
+	int read(CppSystemRT::File& file);
+	int write(CppSystemRT::File& file);
 };
-
-struct NameValuePair {
-	std::vector<unsigned char> name;
-	std::vector<unsigned char> value;
-};
-
-struct Header {
-    unsigned int version;
-    unsigned int type;
-    unsigned int requestId;
-    unsigned int contentLength;
-    unsigned int paddingLength;
-};
-
-struct BeginRequestBody {
-    unsigned int role;
-    unsigned char flags;
-};
-
-struct BeginRequestRecord {
-    Header header;
-    BeginRequestBody body;
-};
-
-struct EndRequestBody {
-    unsigned int appStatus;
-    unsigned char protocolStatus;
-};
-
-struct EndRequestRecord {
-    Header header;
-    EndRequestBody body;
-};
-
-struct UnknownTypeBody {
-    unsigned char type;    
-};
-
-struct UnknownTypeRecord {
-    Header header;
-    UnknownTypeBody body;
-};
-
-} // Protocol End
 
 } // CppFastCGI End
 

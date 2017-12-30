@@ -3,15 +3,19 @@
 
 using namespace CppFastCGI;
 
-DaemonThread::DaemonThread() {
-	socket->bind("localhost", "9000");
+DaemonThread::DaemonThread(std::string const& address, std::string const& port): socket(address, {{"port", port}, {"bind", "true"}}) {
 }
 
 DaemonThread::~DaemonThread() {
-	
+	// wait/stop all threads
+	for (auto& thread : requests) {
+		thread->wait();
+		delete thread;
+	}
 }
 
 void DaemonThread::run() {
-	socket->accept();
-	exit(0);
+	Thread* thread = new CppFastCGI::Thread(socket.accept());
+	requests.push_back(thread);	
+	thread->exec();
 }
