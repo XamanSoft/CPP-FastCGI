@@ -3,6 +3,9 @@
 
 using namespace CppFastCGI;
 
+Record::Record() {
+}
+
 Record::Record(Record::RequestType type, int requestId, int paddingLength) {
 	data.reserve(HEADER_LEN);
 	data[0] = VERSION;
@@ -185,4 +188,13 @@ void Record::writeEndRequestBody(int const& appStatus, int const& protocolStatus
 	data[HEADER_LEN+2] = (appStatus >> 8) & 0xFF;
 	data[HEADER_LEN+3] = appStatus & 0xFF;
 	data[HEADER_LEN+4] = protocolStatus;
+}
+
+void Record::readData(std::stringstream& dat) {
+	dat.write((const char*)data.data()+HEADER_LEN, contentLength());
+}
+
+void Record::writeData(std::stringstream& dat) {
+	data.resize(HEADER_LEN+dat.str().size());
+	dat.read((char*)data.data()+HEADER_LEN, data.size());
 }

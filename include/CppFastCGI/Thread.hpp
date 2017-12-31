@@ -10,8 +10,11 @@ public:
 
 	void run();
 	
+	void send(Record& rec);
+	
 private:
 	std::unique_ptr<CppSystemRT::Socket> socket;
+	std::map<int,Process*> processes;
 };
 
 }

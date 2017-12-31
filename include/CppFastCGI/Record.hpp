@@ -59,7 +59,8 @@ public:
 	static constexpr const char* MAX_REQS	= "FCGI_MAX_REQS";
 	static constexpr const char* MPXS_CONNS	= "FCGI_MPXS_CONNS";
 
-	Record(RequestType type = RT_NONE, int requestId = NULL_REQUEST_ID, int paddingLength = 0);
+	Record();
+	Record(RequestType type, int requestId = NULL_REQUEST_ID, int paddingLength = 0);
 	Record(CppSystemRT::File& file);
 	virtual ~Record();
 	
@@ -75,7 +76,10 @@ public:
 	void writeEndRequestBody(int const& appStatus, int const& protocolStatus);
 	void readNameValuePair(std::map<std::string, std::string>& params);
 	void writeNameValuePair(std::map<std::string, std::string> const& params);
-	
+
+	void readData(std::stringstream& dat);
+	void writeData(std::stringstream& dat);
+
 	int read(CppSystemRT::File& file);
 	int write(CppSystemRT::File& file);
 };
