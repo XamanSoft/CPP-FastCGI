@@ -3,7 +3,6 @@
 
 using namespace CppFastCGI;
 
-int main() {
-	//return CppSystemRT::Daemon::exec<DaemonThread>("localhost", "9000");
-	return DaemonThread{"localhost", "9000"}.exec(true);
+int main(int argc, char* argv[]) {
+	return CppSystemRT::Daemon::exec<DaemonThread>("127.0.0.1", "9000");
 }
