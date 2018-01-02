@@ -3,7 +3,7 @@
 
 using namespace CppFastCGI;
 
-Process::Process(CppFastCGI::Thread& parent, int const& id): id(id), ready(false), parent(parent) {
+Process::Process(CppFastCGI::Thread& parent, int const& id): ready(false), finished(false), status(0), id(id), parent(parent) {
 	
 }
 
@@ -20,6 +20,12 @@ int Process::exec(bool waitFinish) {
 
 void Process::run() {
 	// Process to be executed
+	print("Content-type: text/html\r\n\r\n<html><head><title>Test</title></head><body>");
+	for (auto& param : params) {
+		print(param.first + " = " + param.second + "<br />\n");
+	}
+	print("</body></html>");
+	end(0);
 }
 
 void Process::writeData(Record& rec) {
@@ -32,7 +38,7 @@ void Process::writeData(Record& rec) {
 
 		case Record::STDIN: // STDIN of a process
 			if (rec.contentLength() > 0) {
-				rec.readData(stdin);
+				rec.readData(inStream);
 			} else {
 				ready = true; // process can be executed
 			}
@@ -40,7 +46,33 @@ void Process::writeData(Record& rec) {
 	}
 }
 
+void Process::end(int code) {
+	if (status & PS_STDOUT) {
+		Record outRec{Record::STDOUT, id};
+		parent.send(outRec);
+	}
+	if (status & PS_STDERR) {
+		Record errRec{Record::STDERR, id};
+		parent.send(errRec);
+	}
+	Record endRec(Record::END_REQUEST, id);
+	endRec.writeEndRequestBody(code, Record::REQUEST_COMPLETE);
+	parent.send(endRec);
+	status |= PS_END;
+	finished = true;
+	exit(code);
+}
+
+void Process::error(std::string const& str) {
+	status |= PS_STDERR;
+	Record errRec(Record::STDERR, id);
+	std::stringstream output(str);
+	errRec.writeData(output);
+	parent.send(errRec);
+}
+
 void Process::print(std::string const& str) {
+	status |= PS_STDOUT;
 	Record outRec(Record::STDOUT, id);
 	std::stringstream output(str);
 	outRec.writeData(output);

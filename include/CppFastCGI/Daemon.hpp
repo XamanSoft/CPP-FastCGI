@@ -12,7 +12,7 @@ public:
 	
 private:
 	CppSystemRT::Socket socket;
-	std::list<Thread*> requests;
+	Requests requests;
 };
 
 }

@@ -4,8 +4,6 @@
 namespace CppFastCGI { // CppFastCGI Begin
 
 class Record {
-	std::vector<unsigned char> data;
-
 public:
 	// Listening socket file number
 	//static constexpr const int LISTENSOCK_FILENO	= 0;
@@ -82,6 +80,10 @@ public:
 
 	int read(CppSystemRT::File& file);
 	int write(CppSystemRT::File& file);
+	
+private:
+	unsigned char header[HEADER_LEN];
+	std::vector<unsigned char> data;
 };
 
 } // CppFastCGI End
