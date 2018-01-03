@@ -4,7 +4,7 @@
 using namespace CppFastCGI;
 
 #ifdef _WIN32
-#define getcwd		_getdcwd
+#define getcwd		_getcwd
 #endif
 
 int main(int argc, char* argv[]) {

@@ -8,6 +8,7 @@ Requests::Requests() {
 }
 
 Requests::~Requests() {
+	exit(0);
 	wait(); // wait until all threads are finished
 }
 
