@@ -3,7 +3,7 @@
 
 using namespace CppFastCGI;
 
-Thread::Thread(DaemonThread& parent, CppSystemRT::Socket* sock): finished(false), socket(sock), parent(parent), keepAlive(true) {
+Thread::Thread(CppSystemRT::Socket* sock): finished(false), socket(sock), keepAlive(true) {
 	
 }
 

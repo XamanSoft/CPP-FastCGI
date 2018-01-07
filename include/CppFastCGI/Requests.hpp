@@ -7,16 +7,18 @@ class Thread;
 
 class Requests: public CppSystemRT::Thread {
 public:
-	Requests();
+	Requests(std::string const& address, std::map<std::string, std::string> const& params);
 	virtual ~Requests();
 	
 	void run();
 	
-	void push(CppFastCGI::Thread* thread);
+	bool hasConnection();
+	void accept();
 
 private:
 	std::list<CppFastCGI::Thread*> requests;
 	std::mutex terminateMutex;
+	CppSystemRT::Socket socket;
 };
 
 } // CppFastCGI End

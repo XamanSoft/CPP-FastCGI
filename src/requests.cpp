@@ -3,13 +3,25 @@
 
 using namespace CppFastCGI;
 
-Requests::Requests() {
+Requests::Requests(std::string const& address, std::map<std::string, std::string> const& params): socket(address, params) {
 	exec();
 }
 
 Requests::~Requests() {
 	exit(0);
 	wait(); // wait until all threads are finished
+}
+
+bool Requests::hasConnection() {
+	return socket.select();
+}
+
+void Requests::accept() {
+	CppFastCGI::Thread* thread = new CppFastCGI::Thread(socket.accept());
+	terminateMutex.lock();
+	requests.push_back(thread);
+	terminateMutex.unlock();
+	thread->exec();
 }
 
 void Requests::run() {
@@ -21,11 +33,5 @@ void Requests::run() {
 			delete thread;
 		}
 	}
-	terminateMutex.unlock();
-}
-
-void Requests::push(CppFastCGI::Thread* thread) {
-	terminateMutex.lock();
-	requests.push_back(thread);
 	terminateMutex.unlock();
 }

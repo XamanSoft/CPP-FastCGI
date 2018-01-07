@@ -11,7 +11,6 @@ public:
 	void run();
 	
 private:
-	CppSystemRT::Socket socket;
 	Requests requests;
 };
 
