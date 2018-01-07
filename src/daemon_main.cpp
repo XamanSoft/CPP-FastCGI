@@ -18,5 +18,5 @@ int main(int argc, char* argv[]) {
 		return 0;
 	}
 	
-	return CppSystemRT::Daemon::exec<DaemonThread>("127.0.0.1", "9000");
+	return CppSystemRT::Daemon::exec<Server>("127.0.0.1", "9000");
 }

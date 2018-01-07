@@ -12,6 +12,6 @@
 #include "CppFastCGI/Requests.hpp"
 #include "CppFastCGI/Request.hpp"
 #include "CppFastCGI/Thread.hpp"
-#include "CppFastCGI/Daemon.hpp"
+#include "CppFastCGI/Server.hpp"
 
 #endif

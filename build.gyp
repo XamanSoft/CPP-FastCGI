@@ -86,6 +86,17 @@
 	
 	'targets': [
 		{
+			'target_name': 'CPP-FastCGI-lib',
+			'type': 'static_library',
+			'sources': [
+				'src/record.cpp',
+				'src/thread.cpp',
+				'src/requests.cpp',
+				'src/request.cpp',
+				'src/server.cpp',
+			],
+		},
+		{
 			'target_name': 'cppfastcgi-daemon',
 			'type': 'executable',
 			'conditions': [
@@ -97,15 +108,11 @@
 				}]
 			],
 			"dependencies": [
+				'CPP-FastCGI-lib',
 				"lib/CPP-Metadata/build.gyp:CPP-Metadata-lib",
 				"lib/CPP-SystemRT/build.gyp:CPP-SystemRT-lib"
 			],
 			'sources': [
-				'src/record.cpp',
-				'src/thread.cpp',
-				'src/requests.cpp',
-				'src/request.cpp',
-				'src/daemon.cpp',
 				'src/daemon_main.cpp'
 			],
 		},
