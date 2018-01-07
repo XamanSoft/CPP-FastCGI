@@ -3,16 +3,16 @@
 
 using namespace CppFastCGI;
 
-Thread::Thread(CppSystemRT::Socket* sock): finished(false), socket(sock), keepAlive(true) {
+Thread::Thread(CppSystemRT::File* conn): finished(false), conn(conn), keepAlive(true) {
 	
 }
 
-Thread::~Thread() { socket->close(); }
+Thread::~Thread() { conn->close(); }
 
 void Thread::run() {
 	// Receive and dispatch messages
-	if (socket->available() >= Record::HEADER_LEN) {
-		Record rec(*socket);
+	if (conn->available() >= Record::HEADER_LEN) {
+		Record rec(*conn);
 		int id = rec.requestId();
 		
 		switch (rec.requestType()) {
@@ -42,7 +42,7 @@ void Thread::run() {
 				if (rec.requestId() == Record::NULL_REQUEST_ID) {
 					Record response(Record::GET_VALUES_RESULT);
 					response.writeNameValuePair({{Record::MAX_CONNS, "10"}, {Record::MAX_REQS, "50"}, {Record::MPXS_CONNS, "1"}});
-					response.write(*socket);
+					response.write(*conn);
 				} else {
 					// ?
 				}
@@ -69,6 +69,6 @@ void Thread::run() {
 
 void Thread::send(Record& rec) {
 	socketMutex.lock();
-	rec.write(*socket);
+	rec.write(*conn);
 	socketMutex.unlock();
 }
