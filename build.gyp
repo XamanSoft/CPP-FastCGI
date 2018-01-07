@@ -103,8 +103,8 @@
 			'sources': [
 				'src/record.cpp',
 				'src/thread.cpp',
-				'src/process.cpp',
 				'src/requests.cpp',
+				'src/request.cpp',
 				'src/daemon.cpp',
 				'src/daemon_main.cpp'
 			],

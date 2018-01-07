@@ -3,23 +3,23 @@
 
 using namespace CppFastCGI;
 
-Process::Process(CppFastCGI::Thread& parent, int const& id): ready(false), finished(false), status(0), id(id), parent(parent) {
+Request::Request(CppFastCGI::Thread& parent, int const& id): ready(false), finished(false), status(0), id(id), parent(parent) {
 	
 }
 
-Process::~Process() {
+Request::~Request() {
 	
 }
 
-int Process::exec(bool waitFinish) {
+int Request::exec(bool waitFinish) {
 	if (ready)
 		return CppSystemRT::Thread::exec(waitFinish);
 
 	return 0;
 }
 
-void Process::run() {
-	// Process to be executed
+void Request::run() {
+	// Request to be executed
 	print("Content-type: text/html\r\n\r\n<html><head><title>Test</title></head><body>");
 	for (auto& param : params) {
 		print(param.first + " = " + param.second + "<br />\n");
@@ -28,25 +28,25 @@ void Process::run() {
 	end(0);
 }
 
-void Process::writeData(Record& rec) {
+void Request::writeData(Record& rec) {
 	switch (rec.requestType()) {
-		case Record::PARAMS: // PARAMS of a process
+		case Record::PARAMS: // PARAMS of a Request
 			if (rec.contentLength() > 0) {
 				rec.readNameValuePair(params);
 			}
 		break;
 
-		case Record::STDIN: // STDIN of a process
+		case Record::STDIN: // STDIN of a Request
 			if (rec.contentLength() > 0) {
 				rec.readData(inStream);
 			} else {
-				ready = true; // process can be executed
+				ready = true; // Request can be executed
 			}
 		break;
 	}
 }
 
-void Process::end(int code) {
+void Request::end(int code) {
 	if (status & PS_STDOUT) {
 		Record outRec{Record::STDOUT, id};
 		parent.send(outRec);
@@ -63,7 +63,7 @@ void Process::end(int code) {
 	exit(code);
 }
 
-void Process::error(std::string const& str) {
+void Request::error(std::string const& str) {
 	status |= PS_STDERR;
 	Record errRec(Record::STDERR, id);
 	std::stringstream output(str);
@@ -71,7 +71,7 @@ void Process::error(std::string const& str) {
 	parent.send(errRec);
 }
 
-void Process::print(std::string const& str) {
+void Request::print(std::string const& str) {
 	status |= PS_STDOUT;
 	Record outRec(Record::STDOUT, id);
 	std::stringstream output(str);

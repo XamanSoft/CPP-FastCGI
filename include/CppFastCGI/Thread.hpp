@@ -18,7 +18,7 @@ public:
 	
 private:
 	std::unique_ptr<CppSystemRT::File> conn;
-	std::map<int,Process*> processes;
+	std::map<int,Request*> requests;
 	bool keepAlive;
 	std::mutex socketMutex;
 };

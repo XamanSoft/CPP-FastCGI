@@ -1,14 +1,14 @@
-#ifndef _CPPFASTCGI_PROCESS_HPP
-#define _CPPFASTCGI_PROCESS_HPP
+#ifndef _CPPFASTCGI_REQUEST_HPP
+#define _CPPFASTCGI_REQUEST_HPP
 
 namespace CppFastCGI { // CppFastCGI Begin
 
 class Thread;
 
-class Process: public CppSystemRT::Thread {
+class Request: public CppSystemRT::Thread {
 public:
-	Process(CppFastCGI::Thread& parent, int const& id);
-	virtual ~Process();
+	Request(CppFastCGI::Thread& parent, int const& id);
+	virtual ~Request();
 	
 	int exec(bool waitFinish = false);
 	void run();

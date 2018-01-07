@@ -10,7 +10,7 @@
 
 #include "CppFastCGI/Record.hpp"
 #include "CppFastCGI/Requests.hpp"
-#include "CppFastCGI/Process.hpp"
+#include "CppFastCGI/Request.hpp"
 #include "CppFastCGI/Thread.hpp"
 #include "CppFastCGI/Daemon.hpp"
 

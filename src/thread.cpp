@@ -18,23 +18,23 @@ void Thread::run() {
 		switch (rec.requestType()) {
 			case Record::BEGIN_REQUEST: {
 				int role = 0, flags = 0;
-				processes[id] = new Process(*this, id);
+				requests[id] = new Request(*this, id);
 				rec.readBeginRequestBody(role, flags);
 				keepAlive = flags & Record::KEEP_CONN; // Last begin connection determine if the connection should stay alive
 			}
 			break;
 
 			case Record::ABORT_REQUEST: // Request to abort a process
-				if (processes.count(id))
-					processes[id]->exit(-1);
+				if (requests.count(id))
+					requests[id]->exit(-1);
 			break;
 
 			case Record::PARAMS: // PARAMS of a process
 			case Record::STDIN: // STDIN of a process
-				if (processes.count(id)) {
-					processes[id]->writeData(rec);
-					if (processes[id]->ready) // Ready after STDIN contentLength == 0
-						processes[id]->exec();
+				if (requests.count(id)) {
+					requests[id]->writeData(rec);
+					if (requests[id]->ready) // Ready after STDIN contentLength == 0
+						requests[id]->exec();
 				}
 			break;
 
@@ -52,16 +52,16 @@ void Thread::run() {
 	}
 
 	// check if last requests have finished and exit the thread
-	for (auto& process : std::map<int,Process*>(processes)) {
-		if (process.second->finished) {
-			Process* proc = process.second;
-			processes.erase(process.first);
+	for (auto& request : std::map<int,Request*>(requests)) {
+		if (request.second->finished) {
+			Request* proc = request.second;
+			requests.erase(request.first);
 			proc->wait();
 			delete proc;
 		}
 	}
 
-	if (!keepAlive && !processes.size()) {
+	if (!keepAlive && !requests.size()) {
 		finished = true;
 		exit(0);
 	}
