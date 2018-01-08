@@ -9,9 +9,9 @@
 #include <algorithm>
 
 #include "CppFastCGI/Record.hpp"
-#include "CppFastCGI/Requests.hpp"
 #include "CppFastCGI/Request.hpp"
-#include "CppFastCGI/Thread.hpp"
+#include "CppFastCGI/ReqPipe.hpp"
+#include "CppFastCGI/Requests.hpp"
 #include "CppFastCGI/Server.hpp"
 
 #endif

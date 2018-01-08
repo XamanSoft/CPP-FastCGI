@@ -3,8 +3,6 @@
 
 namespace CppFastCGI { // CppFastCGI Begin
 
-class Thread;
-
 class Requests: public CppSystemRT::Thread {
 public:
 	Requests(std::string const& address, std::map<std::string, std::string> const& params);
@@ -16,7 +14,7 @@ public:
 	void accept();
 
 private:
-	std::list<CppFastCGI::Thread*> requests;
+	std::list<CppFastCGI::ReqPipe*> requests;
 	std::mutex terminateMutex;
 	CppSystemRT::Socket socket;
 };

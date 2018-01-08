@@ -90,7 +90,7 @@
 			'type': 'static_library',
 			'sources': [
 				'src/record.cpp',
-				'src/thread.cpp',
+				'src/reqpipe.cpp',
 				'src/requests.cpp',
 				'src/request.cpp',
 				'src/server.cpp',

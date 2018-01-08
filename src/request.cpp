@@ -3,7 +3,7 @@
 
 using namespace CppFastCGI;
 
-Request::Request(CppFastCGI::Thread& parent, int const& id): ready(false), finished(false), status(0), id(id), parent(parent) {
+Request::Request(CppFastCGI::ReqPipe& parent, int const& id): ready(false), finished(false), status(0), id(id), parent(parent) {
 	
 }
 

@@ -3,11 +3,11 @@
 
 namespace CppFastCGI { // CppFastCGI Begin
 
-class Thread;
+class ReqPipe;
 
 class Request: public CppSystemRT::Thread {
 public:
-	Request(CppFastCGI::Thread& parent, int const& id);
+	Request(CppFastCGI::ReqPipe& parent, int const& id);
 	virtual ~Request();
 	
 	int exec(bool waitFinish = false);
@@ -34,7 +34,7 @@ protected:
 
 private:
 	int id;
-	CppFastCGI::Thread& parent;
+	CppFastCGI::ReqPipe& parent;
 	std::stringstream inStream;
 	std::map<std::string, std::string> params;
 };

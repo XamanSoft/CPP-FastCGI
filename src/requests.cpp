@@ -17,20 +17,20 @@ bool Requests::hasConnection() {
 }
 
 void Requests::accept() {
-	CppFastCGI::Thread* thread = new CppFastCGI::Thread(socket.accept());
+	CppFastCGI::ReqPipe* reqpipe = new CppFastCGI::ReqPipe(socket.accept());
 	terminateMutex.lock();
-	requests.push_back(thread);
+	requests.push_back(reqpipe);
 	terminateMutex.unlock();
-	thread->exec();
+	reqpipe->exec();
 }
 
 void Requests::run() {
 	terminateMutex.lock();
-	for (auto& thread : std::list<CppFastCGI::Thread*>(requests)) {
-		if (thread->finished) {
-			requests.remove(thread);
-			thread->wait();
-			delete thread;
+	for (auto& reqpipe : std::list<CppFastCGI::ReqPipe*>(requests)) {
+		if (reqpipe->finished) {
+			requests.remove(reqpipe);
+			reqpipe->wait();
+			delete reqpipe;
 		}
 	}
 	terminateMutex.unlock();

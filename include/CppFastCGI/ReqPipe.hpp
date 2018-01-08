@@ -1,14 +1,12 @@
-#ifndef _CPPFASTCGI_THREAD_HPP
-#define _CPPFASTCGI_THREAD_HPP
+#ifndef _CPPFASTCGI_REQPIPE_HPP
+#define _CPPFASTCGI_REQPIPE_HPP
 
 namespace CppFastCGI {
 
-class DaemonThread;
-
-class Thread: public CppSystemRT::Thread {
+class ReqPipe: public CppSystemRT::Thread {
 public:
-	Thread(CppSystemRT::File* conn);
-	virtual ~Thread();
+	ReqPipe(CppSystemRT::File* conn);
+	virtual ~ReqPipe();
 
 	void run();
 	

@@ -3,13 +3,13 @@
 
 using namespace CppFastCGI;
 
-Thread::Thread(CppSystemRT::File* conn): finished(false), conn(conn), keepAlive(true) {
+ReqPipe::ReqPipe(CppSystemRT::File* conn): finished(false), conn(conn), keepAlive(true) {
 	
 }
 
-Thread::~Thread() { conn->close(); }
+ReqPipe::~ReqPipe() { conn->close(); }
 
-void Thread::run() {
+void ReqPipe::run() {
 	// Receive and dispatch messages
 	if (conn->available() >= Record::HEADER_LEN) {
 		Record rec(*conn);
@@ -67,7 +67,7 @@ void Thread::run() {
 	}
 }
 
-void Thread::send(Record& rec) {
+void ReqPipe::send(Record& rec) {
 	socketMutex.lock();
 	rec.write(*conn);
 	socketMutex.unlock();
