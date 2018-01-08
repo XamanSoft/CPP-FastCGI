@@ -3,7 +3,7 @@
 
 using namespace CppFastCGI;
 
-Request::Request(CppFastCGI::ReqPipe& parent, int const& id): ready(false), finished(false), status(0), id(id), parent(parent) {
+Request::Request(CppFastCGI::ReqPipe& parent, int const& id): status(0), id(id), parent(parent) {
 	
 }
 
@@ -11,11 +11,8 @@ Request::~Request() {
 	
 }
 
-int Request::exec(bool waitFinish) {
-	if (ready)
-		return CppSystemRT::Thread::exec(waitFinish);
-
-	return 0;
+bool Request::checkStatus(int stat) {
+	return status & stat;
 }
 
 void Request::run() {
@@ -40,31 +37,30 @@ void Request::writeData(Record& rec) {
 			if (rec.contentLength() > 0) {
 				rec.readData(inStream);
 			} else {
-				ready = true; // Request can be executed
+				status |= RS_READY; // Request can be executed
 			}
 		break;
 	}
 }
 
 void Request::end(int code) {
-	if (status & PS_STDOUT) {
+	if (status & RS_STDOUT) {
 		Record outRec{Record::STDOUT, id};
 		parent.send(outRec);
 	}
-	if (status & PS_STDERR) {
+	if (status & RS_STDERR) {
 		Record errRec{Record::STDERR, id};
 		parent.send(errRec);
 	}
 	Record endRec(Record::END_REQUEST, id);
 	endRec.writeEndRequestBody(code, Record::REQUEST_COMPLETE);
 	parent.send(endRec);
-	status |= PS_END;
-	finished = true;
+	status |= RS_END;
 	exit(code);
 }
 
 void Request::error(std::string const& str) {
-	status |= PS_STDERR;
+	status |= RS_STDERR;
 	Record errRec(Record::STDERR, id);
 	std::stringstream output(str);
 	errRec.writeData(output);
@@ -72,7 +68,7 @@ void Request::error(std::string const& str) {
 }
 
 void Request::print(std::string const& str) {
-	status |= PS_STDOUT;
+	status |= RS_STDOUT;
 	Record outRec(Record::STDOUT, id);
 	std::stringstream output(str);
 	outRec.writeData(output);

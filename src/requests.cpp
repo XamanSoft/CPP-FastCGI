@@ -27,7 +27,7 @@ void Requests::accept() {
 void Requests::run() {
 	terminateMutex.lock();
 	for (auto& reqpipe : std::list<CppFastCGI::ReqPipe*>(requests)) {
-		if (reqpipe->finished) {
+		if (reqpipe->checkStatus(ReqPipe::RPS_FINISHED)) {
 			requests.remove(reqpipe);
 			reqpipe->wait();
 			delete reqpipe;

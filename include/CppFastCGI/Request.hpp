@@ -7,25 +7,21 @@ class ReqPipe;
 
 class Request: public CppSystemRT::Thread {
 public:
+	enum ReqStatus {
+		RS_NONE		= 0,
+		RS_STDERR	= 1,
+		RS_STDOUT	= 2,
+		RS_READY	= 4,
+		RS_END		= 8
+	};
+
 	Request(CppFastCGI::ReqPipe& parent, int const& id);
 	virtual ~Request();
 	
-	int exec(bool waitFinish = false);
 	void run();
 	
 	void writeData(Record& rec);
-	
-	bool ready;
-	bool finished;
-	
-	int status;
-	
-	enum ProcStatus {
-		PS_NONE		= 0,
-		PS_STDERR	= 1,
-		PS_STDOUT	= 2,
-		PS_END		= 4
-	};
+	bool checkStatus(int stat);
 
 protected:
 	void end(int code);
@@ -34,6 +30,7 @@ protected:
 
 private:
 	int id;
+	int status;
 	CppFastCGI::ReqPipe& parent;
 	std::stringstream inStream;
 	std::map<std::string, std::string> params;

@@ -3,7 +3,7 @@
 
 using namespace CppFastCGI;
 
-ReqPipe::ReqPipe(CppSystemRT::File* conn): finished(false), conn(conn), keepAlive(true) {
+ReqPipe::ReqPipe(CppSystemRT::File* conn): conn(conn), status(0) {
 	
 }
 
@@ -20,7 +20,9 @@ void ReqPipe::run() {
 				int role = 0, flags = 0;
 				requests[id] = new Request(*this, id);
 				rec.readBeginRequestBody(role, flags);
-				keepAlive = flags & Record::KEEP_CONN; // Last begin connection determine if the connection should stay alive
+				status &= ~RPS_KEEPALIVE;
+				if (flags & Record::KEEP_CONN) // Last begin connection determine if the connection should stay alive
+					status |= RPS_KEEPALIVE;
 			}
 			break;
 
@@ -33,7 +35,7 @@ void ReqPipe::run() {
 			case Record::STDIN: // STDIN of a process
 				if (requests.count(id)) {
 					requests[id]->writeData(rec);
-					if (requests[id]->ready) // Ready after STDIN contentLength == 0
+					if (requests[id]->checkStatus(Request::RS_READY)) // Ready after STDIN contentLength == 0
 						requests[id]->exec();
 				}
 			break;
@@ -53,7 +55,7 @@ void ReqPipe::run() {
 
 	// check if last requests have finished and exit the thread
 	for (auto& request : std::map<int,Request*>(requests)) {
-		if (request.second->finished) {
+		if (request.second->checkStatus(Request::RS_END)) {
 			Request* proc = request.second;
 			requests.erase(request.first);
 			proc->wait();
@@ -61,10 +63,14 @@ void ReqPipe::run() {
 		}
 	}
 
-	if (!keepAlive && !requests.size()) {
-		finished = true;
+	if (!(status & RPS_KEEPALIVE) && !requests.size()) {
+		status |= RPS_FINISHED;
 		exit(0);
 	}
+}
+
+bool ReqPipe::checkStatus(int stat) {
+	return status & stat;
 }
 
 void ReqPipe::send(Record& rec) {
