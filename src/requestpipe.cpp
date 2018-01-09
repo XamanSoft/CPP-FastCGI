@@ -3,22 +3,22 @@
 
 using namespace CppFastCGI;
 
-ReqPipe::ReqPipe(CppSystemRT::File* conn): conn(conn), status(0) {
+RequestPipe::RequestPipe(RequestHandler const& requestHandler, CppSystemRT::File* conn): requestHandler(requestHandler), conn(conn), status(0) {
 	
 }
 
-ReqPipe::~ReqPipe() { conn->close(); }
+RequestPipe::~RequestPipe() { conn->close(); }
 
-void ReqPipe::run() {
+void RequestPipe::run() {
 	// Receive and dispatch messages
 	if (conn->available() >= Record::HEADER_LEN) {
 		Record rec(*conn);
 		int id = rec.requestId();
-		
+
 		switch (rec.requestType()) {
 			case Record::BEGIN_REQUEST: {
 				int role = 0, flags = 0;
-				requests[id] = new Request(*this, id);
+				requests[id] = new RequestInfo{ id, *this, nullptr };
 				rec.readBeginRequestBody(role, flags);
 				status &= ~RPS_KEEPALIVE;
 				if (flags & Record::KEEP_CONN) // Last begin connection determine if the connection should stay alive
@@ -27,16 +27,27 @@ void ReqPipe::run() {
 			break;
 
 			case Record::ABORT_REQUEST: // Request to abort a process
-				if (requests.count(id))
-					requests[id]->exit(-1);
+				if (requests.count(id) && requests[id]->request)
+					requests[id]->request->exit(-1);
 			break;
 
 			case Record::PARAMS: // PARAMS of a process
+				if (requests.count(id)) {
+					if (rec.contentLength() > 0) {
+						rec.readNameValuePair(requests[id]->params);
+					}
+				}
+			break;
+			
 			case Record::STDIN: // STDIN of a process
 				if (requests.count(id)) {
-					requests[id]->writeData(rec);
-					if (requests[id]->checkStatus(Request::RS_READY)) // Ready after STDIN contentLength == 0
-						requests[id]->exec();
+					if (rec.contentLength() > 0) {
+						rec.readData(requests[id]->inStream);
+					} else {
+						Request* request = requestHandler.create(requests[id]);
+						requests[id]->request = request;
+						request->exec(); // Ready after STDIN contentLength == 0
+					}
 				}
 			break;
 
@@ -54,12 +65,15 @@ void ReqPipe::run() {
 	}
 
 	// check if last requests have finished and exit the thread
-	for (auto& request : std::map<int,Request*>(requests)) {
-		if (request.second->checkStatus(Request::RS_END)) {
-			Request* proc = request.second;
+	for (auto& request : std::map<int,RequestInfo*>(requests)) {
+		if (request.second->request && request.second->request->checkStatus(Request::RS_END)) {
+			RequestInfo* requestInfo = request.second;
 			requests.erase(request.first);
-			proc->wait();
-			delete proc;
+			if (requestInfo->request) {
+				requestInfo->request->wait();
+				delete requestInfo->request;
+			}
+			delete requestInfo;
 		}
 	}
 
@@ -69,12 +83,10 @@ void ReqPipe::run() {
 	}
 }
 
-bool ReqPipe::checkStatus(int stat) {
+bool RequestPipe::checkStatus(int stat) {
 	return status & stat;
 }
 
-void ReqPipe::send(Record& rec) {
-	socketMutex.lock();
+void RequestPipe::send(Record& rec) {
 	rec.write(*conn);
-	socketMutex.unlock();
 }

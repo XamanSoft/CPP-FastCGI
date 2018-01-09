@@ -3,7 +3,7 @@
 
 namespace CppFastCGI { // CppFastCGI Begin
 
-class ReqPipe;
+class RequestPipe;
 
 class Request: public CppSystemRT::Thread {
 public:
@@ -15,25 +15,19 @@ public:
 		RS_END		= 8
 	};
 
-	Request(CppFastCGI::ReqPipe& parent, int const& id);
+	Request(RequestInfo* rInfo);
 	virtual ~Request();
-	
-	void run();
-	
-	void writeData(Record& rec);
+
 	bool checkStatus(int stat);
 
 protected:
+	virtual void run();
 	void end(int code);
 	void error(std::string const& str);
 	void print(std::string const& str);
 
-private:
-	int id;
+	RequestInfo* requestInfo;
 	int status;
-	CppFastCGI::ReqPipe& parent;
-	std::stringstream inStream;
-	std::map<std::string, std::string> params;
 };
 
 } // CppFastCGI End

@@ -3,27 +3,25 @@
 
 namespace CppFastCGI {
 
-class ReqPipe: public CppSystemRT::Thread {
+class RequestPipe: public CppSystemRT::Thread {
 public:
-	enum ReqPipeStatus {
+	enum RequestPipeStatus {
 		RPS_FINISHED	= 1,
 		RPS_KEEPALIVE	= 2
 	};
 
-	ReqPipe(CppSystemRT::File* conn);
-	virtual ~ReqPipe();
+	RequestPipe(RequestHandler const& requestHandler, CppSystemRT::File* conn);
+	virtual ~RequestPipe();
 
 	void run();
 	
 	bool checkStatus(int stat);
 	void send(Record& rec);
 	
-	
 private:
+	RequestHandler const& requestHandler;
 	std::unique_ptr<CppSystemRT::File> conn;
-	std::map<int,Request*> requests;
-	bool keepAlive;
-	std::mutex socketMutex;
+	std::map<int,RequestInfo*> requests;
 	int status;
 };
 
