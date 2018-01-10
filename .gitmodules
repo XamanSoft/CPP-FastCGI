@@ -4,3 +4,6 @@
 [submodule "lib/CPP-Metadata"]
 	path = lib/CPP-Metadata
 	url = https://github.com/XamanSoft/CPP-Metadata.git
+[submodule "lib/cpython"]
+	path = lib/cpython
+	url = https://github.com/python/cpython.git
