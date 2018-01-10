@@ -15,7 +15,7 @@ void Server::run() {
 		requests.push_back(reqpipe);
 		reqpipe->exec();
 	}
-	
+
 	for (auto& reqpipe : std::list<RequestPipe*>(requests)) {
 		if (reqpipe->checkStatus(RequestPipe::RPS_FINISHED)) {
 			requests.remove(reqpipe);

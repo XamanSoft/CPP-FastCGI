@@ -18,12 +18,9 @@ namespace RequestPath {
 class RequestHandler {
 public:
 	struct PathHandler {
-		typedef bool (*request_check_t)(std::string const& basePath, std::string const& reqPath);
-		typedef Request* (*create_request_t)(RequestInfo* requestInfo);
-	
 		std::string path;
-		request_check_t request_check;
-		create_request_t request_handler;
+		RequestPath::request_check_t request_check;
+		RequestPath::create_request_t request_handler;
 		
 		bool operator()(std::string const& reqPath) const {
 			if (request_check)
@@ -33,7 +30,7 @@ public:
 		}
 		
 		PathHandler(): request_check(nullptr), request_handler(nullptr) {}
-		PathHandler(std::string path, request_check_t request_check, create_request_t request_handler):
+		PathHandler(std::string path, RequestPath::request_check_t request_check, RequestPath::create_request_t request_handler):
 			path(path), request_check(request_check), request_handler(request_handler) {}
 	};
 
@@ -46,15 +43,25 @@ public:
 	}
 
 	template <typename Tp>
-	inline void registerPath(std::string const& base, PathHandler::request_check_t check) {
+	inline void registerPath(std::string const& base, RequestPath::request_check_t check) {
 		registerRequestPath(base, check, RequestPath::Create<Tp>);
+	}
+	
+	template <typename Tp>
+	inline void registerModulePath(std::string const& base) {
+		registerRequestPath(base, RequestModule::Create<Tp>);
+	}
+	
+	template <typename Tp>
+	inline void registerModulePath(std::string const& base, RequestPath::request_check_t check) {
+		registerRequestPath(base, check, RequestModule::Create<Tp>);
 	}
 
 	Request* create(RequestInfo* requestInfo) const;
 
 private:
-	void registerRequestPath(std::string const& base, PathHandler::create_request_t handler);
-	void registerRequestPath(std::string const& base, PathHandler::request_check_t check, PathHandler::create_request_t handler);
+	void registerRequestPath(std::string const& base, RequestPath::create_request_t handler);
+	void registerRequestPath(std::string const& base, RequestPath::request_check_t check, RequestPath::create_request_t handler);
 
 	std::vector<std::string> params;
 	std::vector<PathHandler> handlers;

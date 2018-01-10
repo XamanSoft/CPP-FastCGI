@@ -13,6 +13,7 @@
 #include "CppFastCGI/Record.hpp"
 #include "CppFastCGI/RequestInfo.hpp"
 #include "CppFastCGI/Request.hpp"
+#include "CppFastCGI/RequestModule.hpp"
 #include "CppFastCGI/RequestHandler.hpp"
 #include "CppFastCGI/RequestPipe.hpp"
 #include "CppFastCGI/Server.hpp"

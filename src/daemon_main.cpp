@@ -3,10 +3,6 @@
 
 using namespace CppFastCGI;
 
-#ifdef _WIN32
-#define getcwd		_getcwd
-#endif
-
 class DebugRequest: public Request {
 public:
 	DebugRequest(RequestInfo* requestInfo): Request(requestInfo) {}
@@ -23,19 +19,19 @@ protected:
 	}
 };
 
+REQUESTMODULE(PythonModule, CppSystemRT::Path::SharedObject("$EWD/mod_python"));
+
 int main(int argc, char* argv[]) {
-	char cwd[1024];
-	if (getcwd(cwd, sizeof(cwd)) != NULL) {
-		CppSystemRT::Daemon::config("pidfile", std::string(cwd)+"/cppfcgi.pid");
-	}
+	CppSystemRT::Daemon::config("pidfile", CppSystemRT::Path::Parse("$EWD/cppfcgi.pid"));
 
 	if (argc > 1 && std::string(argv[1]) == "-q") {
 		CppSystemRT::Daemon::stop();
 		return 0;
 	}
-	
+
 	RequestHandler requestHandler;
 	requestHandler.registerPath<DebugRequest>("^/debug", RequestPath::RegexMatch);
+	requestHandler.registerModulePath<PythonModule>("\\.py(/|\\?|$)", RequestPath::RegexSearch);
 	
 	return CppSystemRT::Daemon::exec<Server>("127.0.0.1", "9000", requestHandler);
 }

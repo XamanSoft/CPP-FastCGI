@@ -13,6 +13,9 @@
 		],
 	},
 	'target_defaults': {
+		'target_conditions': [
+		  ['_type=="shared_library" or _type=="static_library"', {'cflags': ['-fPIC'], 'ldflags': ['-fPIC']}],
+		],
 		"include_dirs" : [ 
 			'lib/CPP-Metadata/include',
 			'lib/CPP-SystemRT/include',
@@ -86,6 +89,26 @@
 	
 	'targets': [
 		{
+			'target_name': 'mod_python',
+			'type': 'shared_library',
+			'defines': ['PYTHON_MODULE=1'],
+			'conditions': [
+				['OS == "win"', {
+				#	'libraries': ['-ladvapi32.lib', '-lws2_32.lib'],
+				}],
+				['OS == "linux"', {
+				#	'libraries': ['-lpthread'],
+				}]
+			],
+			"dependencies": [
+				'CPP-FastCGI-lib',
+				"lib/CPP-SystemRT/build.gyp:CPP-SystemRT-lib"
+			],
+			'sources': [
+				'mod/python.cpp',
+			],
+		},
+		{
 			'target_name': 'CPP-FastCGI-lib',
 			'type': 'static_library',
 			'sources': [
@@ -93,6 +116,7 @@
 				'src/requestpipe.cpp',
 				'src/request.cpp',
 				'src/requesthandler.cpp',
+				'src/requestmodule.cpp',
 				'src/server.cpp',
 			],
 		},
@@ -104,7 +128,7 @@
 					'libraries': ['-ladvapi32.lib', '-lws2_32.lib'],
 				}],
 				['OS == "linux"', {
-					'libraries': ['-lpthread'],
+					'libraries': ['-lpthread', '-ldl'],
 				}]
 			],
 			"dependencies": [

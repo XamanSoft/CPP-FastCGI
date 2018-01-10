@@ -19,11 +19,11 @@ RequestHandler::~RequestHandler() {
 	
 }
 
-void RequestHandler::registerRequestPath(std::string const& base, PathHandler::create_request_t handler) {
+void RequestHandler::registerRequestPath(std::string const& base, RequestPath::create_request_t handler) {
 	handlers.push_back(PathHandler{base, nullptr, handler});
 }
 
-void RequestHandler::registerRequestPath(std::string const& base, PathHandler::request_check_t check, PathHandler::create_request_t handler) {
+void RequestHandler::registerRequestPath(std::string const& base, RequestPath::request_check_t check, RequestPath::create_request_t handler) {
 	handlers.push_back(PathHandler{base, check, handler});
 }
 
